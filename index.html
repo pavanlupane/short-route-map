@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
+<script src="http://localhost:5984/_utils/script/json2.js"></script>
+<script src="http://localhost:5984/_utils/script/sha1.js"></script>
+<script src="http://localhost:5984/_utils/script/jquery.js?1.4.2"></script>
+<script src="http://localhost:5984/_utils/script/jquery.couch.js?0.11.0"></script>
+<script src="http://localhost:5984/_utils/script/jquery.dialog.js?0.11.0"></script>
+<style>
+    body{
+        background-color: #808080;
+    }
+    h1{
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+<h1>Coming Soon...</h1>
+<form>
+<input type="text" name="cityname" autocomplete="on" placeholder="City">
+<input type="submit" value="Search">
+</form>
+</body>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$.couch.urlPrefix = "http://localhost:5984";
+	console.log($.couch.urlPrefix);
+	var db = $.couch.db('travelcities');
+	db.allDocs({success: function(data) {
+        console.log(data);
+    }});
+});
+
+
+</script>
+</html>
