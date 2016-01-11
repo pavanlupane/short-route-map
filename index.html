@@ -7,19 +7,44 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.js"></script>
-<script src="http://localhost:5984/_utils/script/json2.js"></script>
-<script src="http://localhost:5984/_utils/script/sha1.js"></script>
-<script src="http://localhost:5984/_utils/script/jquery.js?1.4.2"></script>
-<script src="http://localhost:5984/_utils/script/jquery.couch.js?0.11.0"></script>
-<script src="http://localhost:5984/_utils/script/jquery.dialog.js?0.11.0"></script>
+<script src="shortRouteScript.js"></script>
+<!--script src="temp/autocomplete.js"></script-->
 <style>
-    body{
-        background-color: #808080;
+   .suggestions {
+	background-color: #FFF;
+	padding: 2px 6px;
+	border: 1px solid #000;
     }
-    h1{
+
+    .suggestions:hover {
+        background-color: #DCDCDC;
+    }
+    #containerDiv{
+        width:80%;
+        height: 150px;
+        margin-top: 5%;
+    }
+    #myForm{
+        padding-top: 50px;
+        padding-bottom: 50px;
+        border: 1px solid grey;
+        border-radius: 20px;
+        background-color:rgba(0,0,0,0.4);
+    }
+    #popups{
+        padding-left: 30px;
+    }
+    #formBreak{
+        border: 1px solid grey;
+    }
+    .placesDiv{
+        width: 100%;
+        height: 50px;
+        background:rgba(0,0,0,0.3); 
+        border: 1px solid black;
         text-align: center;
     }
-</style>
+    </style>
 </head>
 <body>
 <h1>Coming Soon...</h1>
@@ -27,33 +52,25 @@
 <input type="text" name="cityname" autocomplete="on" placeholder="City">
 <input type="submit" value="Search">
 </form>-->
-<div class="container" style="width:80%;padding-top:10%;">
+<div class="container" id="containerDiv">
 
     <!--<div class="row">-->
-<form class="row form-inline">
-<div class="=col-lg-8 col-md-8">    
-<input type="text" name="cityname" autocomplete="on" class="form-control" style="width:100%" type="text" placeholder="City">
+        <form class="row form-inline" id="myForm">
+            <div class="=col-lg-10 col-md-10">
+                <input type="text" id="cityname" autofocus="on" autocomplete="off" class="form-control" style="width:100%" type="text" placeholder="Start entering a city">
+                </div>
+            <div class="col-lg-2 col-md-2">
+                <button type="submit" class="btn btn-primary" id="Search" form="forecast" name="Search" value="Search">
+                    <i class="glyphicon glyphicon-search"></i> Search
+                </button>
+            </div>
+            <div class="row">
+                <div id="popups" class='col-md-8 col-lg-8'>
+                </div>
+        </div>
+        </form>
     </div>
-    <div class="col-lg-3 col-md-3">
-    <button type="submit" class="btn btn-primary" id="Search" form="forecast" name="Search" value="Search">
-						<i class="glyphicon glyphicon-search"></i> Search
-					</button>
-    </div>
-</form>
-    </div>
+    <hr id="formBreak">
 
 </body>
-
-<script type="text/javascript">
-$(document).ready(function() {
-	$.couch.urlPrefix = "http://localhost:5984";
-	console.log($.couch.urlPrefix);
-	var db = $.couch.db('travelcities');
-	db.allDocs({success: function(data) {
-        console.log(data);
-    }});
-});
-
-
-</script>
 </html>
