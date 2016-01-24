@@ -40,7 +40,7 @@ $(document).ready(function() {
         dbStr = dbStr.replace(/\s/g, '');
         dbStr+="Places";
         console.log(dbStr);
-        $.get("http://127.0.0.1:5984/travelcities/_design/"+dbStr+"/_view/"+dbStr,function(data){
+        $.get("http://localhost:5984/travelcities/_design/"+dbStr+"/_view/"+dbStr,function(data){
            console.log("jQuery Response::"+data);      // Database data received in cityData
 
             //Parse the data
@@ -53,13 +53,74 @@ $(document).ready(function() {
             //Create an array of place name :: Place key
             for (key in placesArray){
                 //console.log(placesArray[key]);
-                $("#formBreak").append('<div class="placesDiv id=\"'+key+'\"><span>'+placesArray[key]+'</span></div>');
+                getPlacesInfo(placesArray[key]);
             }
-
+            //getPlacesInfo("ChIJlaOcbiG_woARZMl0UJaNYAc");
         }); 
     });
 });
+function setDivInfo(place){
+    console.log(place);
+    $("#formBreak").append('<div class="placesDiv id=\"'+place.name+'\">'
+                           +'<span class="placename">'+place.name+'</span>'
+                           +'<span class="type">'+place.types[0]+'</span>'
+                           +'<span class="number">Contact Number: '+place.international_phone_number+'</span>'
+                           +'<span class="website">Website: <a href="'+place.website+'" target="_new" ">'+place.website+'</a></span>'
+                           +'<span class="url"><a href="'+place.url+'" target="_new"">Google Maps Url</a></span>'
+                           +'<span class="rating">Contact Number: '+place.rating+'</span>'
+                           +'<button class="addButton">Add</button></div>');
+}
+function getPlacesInfo(myPlaceId){
+    //console.log("Key is :: "+myPlaceId);
+    var request = {
+      placeId: myPlaceId
+    };
 
+    service = new google.maps.places.PlacesService(map);
+    service.getDetails(request, callback);
+    
+    function callback(place, status) {
+      if (status == google.maps.places.PlacesServiceStatus.OK) {
+        //console.log(place.geometry.location.lat());
+        //console.log(place.geometry.location.lng());
+        setDivInfo(place);
+      }
+    }
+}
+
+function myMaps(myPlaceId,lats,lngs){
+    
+        initMap();
+      function initMap() {
+        console.log("Inside the init map!");
+        var map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: lats, lng: lngs},
+        zoom: 15
+      });
+
+      var infowindow = new google.maps.InfoWindow();
+      var service = new google.maps.places.PlacesService(map);
+
+      service.getDetails({
+        placeId: myPlaceId
+      }, function(place, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          var marker = new google.maps.Marker({
+            map: map,
+            position: place.geometry.location
+          });
+          google.maps.event.addListener(marker, 'click', function() {
+            infowindow.setContent('<div><strong>' + place.name + '</strong><br>' +
+              'Place ID: ' + place.place_id + '<br>' +
+              place.formatted_address + '</div>');
+            infowindow.open(map, this);
+          });
+        }
+      });
+}
+    
+    
+}
 function searchSuggest() {
     //console.log(statesArray);
 	var str = document.getElementById("cityname").value;
