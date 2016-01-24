@@ -10,14 +10,15 @@
 //        }
 
 /****** jQuery Code for couchDB data fetch******/
-var statesArray = new Array();
+var statesArray = [];
 var cityData;
 var placesArray;
 
 $(document).ready(function() {
+
     //$.get("http://localhost:5984/travelcities/_design/citiesView/_view/citiesView#",function(data)
-    $.get("http://127.0.0.1:5984/travelcities/_design/citiesLatLngView/_view/citiesLatLngView",function(data){
-       console.log("jQuery Response::"+data);      // Database data received in cityData
+    $.get("http://127.0.0.1:5984/travelcities/_design/citiesLatLngView/_view/citiesLatLngView", function (data) {
+       console.log("jQuery Response::" + data);      // Database data received in cityData
 
         
         cityData = jQuery.parseJSON( data );
@@ -28,13 +29,15 @@ $(document).ready(function() {
             statesArray[i] = cityData.rows[i].key;
         }
        console.log(statesArray);            // City array loaded here
-    });
+    } );
     
     $("#cityname").keyup(function() {
        searchSuggest();
     });
     
     $("#Search").click(function() {
+    document.getElementById('formBreak').innerHTML="";
+
         //**** On Search code ****//
         var dbStr = $("#cityname").val();
         dbStr = dbStr.replace(/\s/g, '');
@@ -59,16 +62,51 @@ $(document).ready(function() {
         }); 
     });
 });
+
+ function extractDomain(url) {
+            var domain;
+            if (typeof url ==='undefined'){
+                return;
+            }
+                
+            //find & remove protocol (http, ftp, etc.) and get domain
+            if (url.indexOf("://") > -1) {
+                domain = url.split('/')[2];
+            }
+            else {
+                domain = url.split('/')[0];
+            }
+
+            //find & remove port number
+            domain = domain.split(':')[0];
+
+            return domain;
+ }
+       
+
 function setDivInfo(place){
-    console.log(place);
-    $("#formBreak").append('<div class="placesDiv id=\"'+place.name+'\">'
-                           +'<span class="placename">'+place.name+'</span>'
-                           +'<span class="type">'+place.types[0]+'</span>'
-                           +'<span class="number">Contact Number: '+place.international_phone_number+'</span>'
-                           +'<span class="website">Website: <a href="'+place.website+'" target="_new" ">'+place.website+'</a></span>'
-                           +'<span class="url"><a href="'+place.url+'" target="_new"">Google Maps Url</a></span>'
-                           +'<span class="rating">Contact Number: '+place.rating+'</span>'
-                           +'<button class="addButton">Add</button></div>');
+var img;
+    //console.log(place);
+   if(typeof place.photos!=='undefined'){
+       console.log(place.photos[0].getUrl({'maxWidth': 200, 'maxHeight': 200}));
+       //img=document.createElement('<span class="images"><img src="'+place.photos[0].getUrl({'maxWidth': 200, 'maxHeight': 200})+'"></span><br/>');
+       img=place.photos[0].getUrl({'maxWidth': 200, 'maxHeight': 200});
+   }
+    //console.log(data);  
+    //});
+    //if(place.photos[0].html_attributions){
+    //console.log(place.photos[0].html_attributions[0]);}
+    $("#formBreak").append('<div class="placesDiv" id=\"'+place.name+'\">'
+                           +'<img src='+img+' alt="blahblhab">'
+                           +'<span class="placename">'+place.name+'</span><br/>'
+                           //+img
+                           +'<span class="type">'+(place.types[0]).replace(/_/g," ")+'</span><br/>'
+                           +'<span class="number">Contact Number: '+place.international_phone_number+'</span><br/>'
+                           +'<span class="website">Website: <a href="'+place.website+'" target="_new" ">'+extractDomain(place.website)+'</a></span><br/>'
+                           +'<span class="url">Google Maps: <a href="'+place.url+'" target="_new""><i class="glyphicon glyphicon-link"></i></a></span><br/>' 
+                           +'<span class="rating">Rating: '+place.rating+' </span>'
+                           +'<button class="addButton btn btn-primary">Add</button></div>');
+    
 }
 function getPlacesInfo(myPlaceId){
     //console.log("Key is :: "+myPlaceId);
