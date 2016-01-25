@@ -12,12 +12,17 @@
 /****** jQuery Code for couchDB data fetch******/
 var statesArray = [];
 var cityData;
-var placesArray;
+var placesArray;      
+var placeGeoInfo = {             //this is a JSON object for geo information of places
+    placeId: []
+};
+var placesOnTrip = [];
+
 
 $(document).ready(function() {
 
     //$.get("http://localhost:5984/travelcities/_design/citiesView/_view/citiesView#",function(data)
-    $.get("http://127.0.0.1:5984/travelcities/_design/citiesLatLngView/_view/citiesLatLngView", function (data) {
+    $.get("http://localhost:5984/travelcities/_design/citiesLatLngView/_view/citiesLatLngView", function (data) {
        console.log("jQuery Response::" + data);      // Database data received in cityData
 
         
@@ -58,11 +63,40 @@ $(document).ready(function() {
                 //console.log(placesArray[key]);
                 getPlacesInfo(placesArray[key]);
             }
-            //getPlacesInfo("ChIJlaOcbiG_woARZMl0UJaNYAc");
+            console.log(placeGeoInfo);
         }); 
     });
 });
 
+//onClick event listner for Add button
+$(document).on('click','button.addButton.btn.btn-primary',function(){
+    var placeId = $(this).attr('id');
+    
+    //placesOnTrip is a list of placeId to be visited on a trip
+    if(placesOnTrip.length == 0){
+            placesOnTrip.push(placeId);
+    }else{
+       for(key in placesOnTrip){
+            if(placesOnTrip[key] == placeId){
+                break;
+            }else if(key < (placesOnTrip.length -1)){
+                continue;
+            }else
+                placesOnTrip.push(placeId);
+        } 
+    }
+    
+    
+//    for (key in placeGeoInfo.placeId){
+//        if(placeGeoInfo.placeId[key].id == placeId){
+//            console.log(placeGeoInfo.placeId[key].geo.lat,placeGeoInfo.placeId[key].geo.lng);
+//            //myMaps(placeId,placeGeoInfo.placeId[key].geo.lat,placeGeoInfo.placeId[key].geo.lng);
+//        }
+//    }
+//    for(key in placesOnTrip){
+//        console.log('Place::'+key+'::'+placesOnTrip[key]);
+//    }
+});
  function extractDomain(url) {
             var domain;
             if (typeof url ==='undefined'){
@@ -83,12 +117,29 @@ $(document).ready(function() {
             return domain;
  }
        
-
+function loadPlaceGeoInfo(myPlaceId,myPlaceName,myLat,myLng){
+        
+        placeGeoInfo.placeId.push({ 
+        "id" : myPlaceId,
+        "name" : myPlaceName,
+        "geo":{  
+            "lat":myLat,
+            "lng":myLng
+         }
+    });
+}
 function setDivInfo(place){
-var img;
+    var img;
+    var placeId,lat,lng,placeName;
+    placeId = place.place_id;
+    placeName = place.name;
+    lat = place.geometry.location.lat();
+    lng = place.geometry.location.lng();
     //console.log(place);
-   if(typeof place.photos!=='undefined'){
-       console.log(place.photos[0].getUrl({'maxWidth': 200, 'maxHeight': 200}));
+    
+    loadPlaceGeoInfo(placeId,placeName,lat,lng);
+    if(typeof place.photos!=='undefined'){
+       //console.log(place.photos[0].getUrl({'maxWidth': 200, 'maxHeight': 200}));
        //img=document.createElement('<span class="images"><img src="'+place.photos[0].getUrl({'maxWidth': 200, 'maxHeight': 200})+'"></span><br/>');
        img=place.photos[0].getUrl({'maxWidth': 200, 'maxHeight': 200});
    }
@@ -105,7 +156,7 @@ var img;
                            +'<span class="website">Website: <a href="'+place.website+'" target="_new" ">'+extractDomain(place.website)+'</a></span><br/>'
                            +'<span class="url">Google Maps: <a href="'+place.url+'" target="_new""><i class="glyphicon glyphicon-link"></i></a></span><br/>' 
                            +'<span class="rating">Rating: '+place.rating+' </span>'
-                           +'<button class="addButton btn btn-primary">Add</button></div>');
+                           +'<button class="addButton btn btn-primary" id=\"'+placeId+'\">Add</button></div>');
     
 }
 function getPlacesInfo(myPlaceId){
